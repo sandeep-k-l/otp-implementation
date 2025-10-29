@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Implementation</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Animation for the storage box when a new OTP is generated */
+        @keyframes flash-animation {
+            0% {
+                background-color: #e0e7ff; /* indigo-100 */
+                border-color: #a5b4fc; /* indigo-300 */
+            }
+            100% {
+                background-color: #f1f5f9; /* slate-100 */
+                border-color: #cbd5e1; /* slate-300 */
+            }
+        }
+        
+        .flash {
+            animation: flash-animation 0.7s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 sm:p-10">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Changed h1 and removed p tag as requested -->
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-slate-900 mb-6">
+            OTP Implementation
+        </h1>
+
+        <!-- Button to the user-facing app -->
+        <div class="text-center mb-12">
+            <a href="auth-page.html"
+               class="inline-block py-3 px-6 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 transform hover:scale-105">
+                Go to User-Facing App Demo &rarr;
+            </a>
+        </div>
+
+        <!-- Container for the 3 boxes -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+
+            <!-- Box 1: Generate OTP -->
+            <div class="bg-white rounded-xl shadow-xl p-6 sm:p-8 flex flex-col border-t-4 border-indigo-500 transition-all duration-300 hover:shadow-2xl">
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-5 border-b border-slate-200 pb-4">
+                    <svg class="w-8 h-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.183m0 0v-4.992m0 4.992h-4.992" />
+                    </svg>
+                    <h2 class="text-2xl font-bold text-slate-800">
+                        1. Generate OTP
+                    </h2>
+                </div>
+                <!-- Content -->
+                <p class="text-slate-600 mb-6 text-sm flex-grow">
+                    Generates a new code, starts the 60s expiry, and enforces a 30s resend delay to prevent spam.
+                </p>
+                <button id="generate-btn"
+                        class="w-full flex justify-center py-3 px-4 mt-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:scale-105
+                                disabled:opacity-50 disabled:cursor-not-allowed">
+                    Generate / Reset OTP
+                </button>
+            </div>
+
+            <!-- Box 2: Simulated Storage -->
+            <div class="bg-white rounded-xl shadow-xl p-6 sm:p-8 flex flex-col border-t-4 border-slate-500 transition-all duration-300 hover:shadow-2xl">
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-5 border-b border-slate-200 pb-4">
+                    <svg class="w-8 h-8 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
+                    </svg>
+                    <h2 class="text-2xl font-bold text-slate-800">
+                        2. Simulated Storage
+                    </h2>
+                </div>
+                <!-- Content -->
+                <p class="text-slate-600 mb-6 text-sm flex-grow">
+                    The code is always visible for the demo. The timer shows how long it remains valid.
+                </p>
+                <div class="text-center my-4">
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Current Stored OTP</p>
+                    <div id="storage-display"
+                         class="text-5xl font-mono font-bold text-center text-slate-400 bg-slate-100 p-6 rounded-lg tracking-widest my-3 border border-slate-300 shadow-inner transition-colors duration-300">
+                        ---
+                    </div>
+                    <!-- Timer Display -->
+                    <div id="timer-display" class="text-sm font-medium text-slate-500 h-5">
+                        <!-- Timer text appears here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 3: Verify OTP -->
+            <div class="bg-white rounded-xl shadow-xl p-6 sm:p-8 flex flex-col border-t-4 border-green-500 transition-all duration-300 hover:shadow-2xl">
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-5 border-b border-slate-200 pb-4">
+                    <svg class="w-8 h-8 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.623 0-1.314-.213-2.57-.6-3.751A11.959 11.959 0 0112 2.714z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold text-slate-800">
+                        3. Verify OTP
+                    </h2>
+                </div>
+                <!-- Content -->
+                <div class="flex-grow">
+                    <label for="otp-input" class="text-sm font-medium text-slate-700">Enter 6-Digit Code (3 attempts):</label>
+                    <input type="text" id="otp-input" maxlength="6"
+                           class="w-full text-center text-3xl py-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 tracking-widest font-mono mt-2 disabled:bg-slate-100 disabled:cursor-not-allowed"
+                           placeholder="123456">
+                </div>
+                
+                <!-- Verification Message Area (Fixed height to prevent jank) -->
+                <div class="h-16 mt-6">
+                    <div id="message-area" class="flex items-center justify-center gap-2 p-3 rounded-lg text-center font-medium opacity-0 transition-all duration-300 scale-95">
+                        <svg id="icon-success" class="w-5 h-5 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <svg id="icon-error" class="w-5 h-5 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                        <svg id="icon-warning" class="w-5 h-5 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.332-.216 3.001-1.742 3.001H4.42c-1.526 0-2.493-1.669-1.743-3.001l5.58-9.92zM10 13a1 1 0 100-2 1 1 0 000 2zm-1-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        <span id="message-text"></span>
+                    </div>
+                </div>
+
+                <button id="verify-btn"
+                        class="w-full flex justify-center py-3 px-4 mt-2 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 focus:outline-none focus:ring-4 focus:ring-green-300 transition-all duration-300 transform hover:scale-105
+                                disabled:opacity-50 disabled:cursor-not-allowed">
+                    Verify Code
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const generateBtn = document.getElementById('generate-btn');
+        const storageDisplay = document.getElementById('storage-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const otpInput = document.getElementById('otp-input');
+        const verifyBtn = document.getElementById('verify-btn');
+        
+        const messageArea = document.getElementById('message-area');
+        const messageText = document.getElementById('message-text');
+        const iconSuccess = document.getElementById('icon-success');
+        const iconError = document.getElementById('icon-error');
+        const iconWarning = document.getElementById('icon-warning');
+
+        // --- State ---
+        let currentOTP = null;
+        let isVerified = false;
+        let otpTimerInterval = null; // For the 60s expiry countdown
+        let otpExpiryTimeout = null;  // For the 60s master expiry
+        
+        // NEW: State for new features
+        let verificationAttempts = 0;
+        const maxAttempts = 3;
+        let isResendBlocked = false;
+        let resendTimerInterval = null; // For the 30s resend delay
+
+        /**
+         * Clears all active timers
+         */
+        function clearTimers() {
+            if (otpTimerInterval) clearInterval(otpTimerInterval);
+            if (otpExpiryTimeout) clearTimeout(otpExpiryTimeout);
+            otpTimerInterval = null;
+            otpExpiryTimeout = null;
+        }
+
+        /**
+         * Clears the resend timer
+         */
+        function clearResendTimer() {
+            if (resendTimerInterval) clearInterval(resendTimerInterval);
+            resendTimerInterval = null;
+            isResendBlocked = false;
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate / Reset OTP';
+        }
+
+        /**
+         * Sets the verification message and style
+         */
+        function showMessage(text, type) {
+            messageText.textContent = text;
+            
+            messageArea.classList.remove('bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-yellow-100', 'text-yellow-800');
+            iconSuccess.classList.add('hidden');
+            iconError.classList.add('hidden');
+            iconWarning.classList.add('hidden');
+            
+            if (type === 'success') {
+                messageArea.classList.add('bg-green-100', 'text-green-800');
+                iconSuccess.classList.remove('hidden');
+            } else if (type === 'error') {
+                messageArea.classList.add('bg-red-100', 'text-red-800');
+                iconError.classList.remove('hidden');
+            } else if (type === 'warning') {
+                messageArea.classList.add('bg-yellow-100', 'text-yellow-800');
+                iconWarning.classList.remove('hidden');
+            }
+            
+            messageArea.classList.remove('opacity-0', 'scale-95');
+        }
+
+        /**
+         * Clears the message area
+         */
+        function clearMessage() {
+            messageArea.classList.add('opacity-0', 'scale-95');
+        }
+
+        /**
+         * Handles Generating a new OTP
+         */
+        function handleGenerateOTP() {
+            // Feature #1: Check if resend is blocked
+            if (isResendBlocked) return;
+
+            // 1. Reset all state
+            clearTimers();
+            currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            isVerified = false;
+            verificationAttempts = 0; // NEW: Reset attempts
+
+            // 2. Reset UI
+            otpInput.value = '';
+            otpInput.disabled = false;
+            verifyBtn.disabled = false;
+            verifyBtn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+            clearMessage();
+            storageDisplay.classList.remove('text-slate-400');
+            storageDisplay.classList.add('text-slate-900'); // Set text color to dark
+            timerDisplay.classList.remove('text-red-600', 'text-green-600');
+            timerDisplay.classList.add('text-slate-500');
+
+            // 3. Show OTP
+            storageDisplay.textContent = currentOTP;
+            
+            // 4. Flash animation
+            storageDisplay.classList.remove('flash');
+            void storageDisplay.offsetWidth; // Force CSS reflow
+            storageDisplay.classList.add('flash');
+            
+            // 5. Start 60s expiry timer
+            let expiryTimeLeft = 60;
+            timerDisplay.textContent = `Expires in ${expiryTimeLeft}s`;
+
+            otpTimerInterval = setInterval(() => {
+                expiryTimeLeft--;
+                timerDisplay.textContent = `Expires in ${expiryTimeLeft}s`;
+            }, 1000);
+
+            otpExpiryTimeout = setTimeout(() => {
+                clearInterval(otpTimerInterval);
+                currentOTP = null; // OTP is now invalid
+                storageDisplay.textContent = '---'; // Clear display
+                storageDisplay.classList.add('text-slate-400'); // Set text to light gray
+                storageDisplay.classList.remove('text-slate-900');
+                timerDisplay.textContent = 'OTP Expired';
+                timerDisplay.classList.add('text-red-600');
+                
+                if (!isVerified && verificationAttempts < maxAttempts) {
+                    showMessage('Your OTP has expired. Please generate a new one.', 'warning');
+                    otpInput.disabled = true;
+                }
+            }, 60000); // 60 seconds
+
+            // 6. Feature #1: Start 30s resend delay
+            isResendBlocked = true;
+            generateBtn.disabled = true;
+            let resendTimeLeft = 30;
+            generateBtn.textContent = `Resend available in ${resendTimeLeft}s`;
+            
+            resendTimerInterval = setInterval(() => {
+                resendTimeLeft--;
+                generateBtn.textContent = `Resend available in ${resendTimeLeft}s`;
+                if (resendTimeLeft <= 0) {
+                    clearResendTimer();
+                }
+            }, 1000);
+            
+            // 7. Feature #3: Auto-focus input
+            otpInput.focus();
+
+            console.log(`(Simulation) New OTP Generated: ${currentOTP}`);
+        }
+
+        /**
+         * Handles Verifying the user's input
+         */
+        function handleVerifyOTP() {
+            // Don't do anything if already verified
+            if (isVerified) return;
+
+            const userInput = otpInput.value;
+
+            // Check 1: Are attempts exhausted?
+            if (verificationAttempts >= maxAttempts) {
+                showMessage(`Too many failed attempts. Please generate a new OTP.`, 'error');
+                return;
+            }
+
+            // Check 2: Was an OTP even generated or has it expired?
+            if (!currentOTP) {
+                showMessage('OTP is expired or not yet generated.', 'warning');
+                return;
+            }
+
+            // Check 3: Does the input match the stored OTP?
+            if (userInput === currentOTP) {
+                // SUCCESS
+                isVerified = true;
+                clearTimers(); // Stop expiry timer
+                // Resend timer continues independently
+                showMessage('Verification Successful!', 'success');
+                timerDisplay.textContent = 'Verified!';
+                timerDisplay.classList.remove('text-slate-500', 'text-red-600');
+                timerDisplay.classList.add('text-green-600');
+                
+                otpInput.disabled = true;
+                verifyBtn.disabled = true;
+                verifyBtn.classList.add('disabled:opacity-50', 'disabled:cursor-not-allowed');
+
+            } else {
+                // FAILURE
+                verificationAttempts++;
+                
+                // Feature #2: Check if max attempts reached
+                if (verificationAttempts >= maxAttempts) {
+                    // Lock them out
+                    showMessage(`Too many failed attempts (3/3). Please generate a new OTP.`, 'error');
+                    otpInput.disabled = true;
+                    verifyBtn.disabled = true;
+                    verifyBtn.classList.add('disabled:opacity-50', 'disabled:cursor-not-allowed');
+                    clearTimers(); // Stop the expiry timer
+                    currentOTP = null; // Invalidate the OTP
+                    timerDisplay.textContent = 'Verification Locked';
+                    timerDisplay.classList.add('text-red-600');
+                } else {
+                    // Show normal fail message with attempt count
+                    showMessage(`Verification Failed. (${verificationAttempts}/${maxAttempts} attempts). Try again.`, 'error');
+                    
+                    // Clear input
+                    setTimeout(() => {
+                        otpInput.value = '';
+                        otpInput.focus();
+                    }, 1000); // 1 second delay
+                }
+            }
+        }
+
+        // --- Event Listeners ---
+        generateBtn.addEventListener('click', handleGenerateOTP);
+        verifyBtn.addEventListener('click', handleVerifyOTP);
+
+        // Auto-verify on 6th digit
+        otpInput.addEventListener('input', () => {
+             // Allow only numbers
+            otpInput.value = otpInput.value.replace(/[^0-9]/g, '');
+            clearMessage();
+            if (otpInput.value.length === 6) {
+                handleVerifyOTP();
+            }
+        });
+        
+        // Also allow pressing 'Enter'
+        otpInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter' && otpInput.value.length === 6) {
+                handleVerifyOTP();
+            }
+        });
+
+    </script>
+</body>
+</html>
+
