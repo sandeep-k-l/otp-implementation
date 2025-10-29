@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Project Documentation</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Simple styling for the article content */
+        .doc-content h2 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #1e293b; /* slate-800 */
+            margin-top: 2.5rem; /* mt-10 */
+            margin-bottom: 1rem; /* mb-4 */
+            border-bottom: 1px solid #cbd5e1; /* border-slate-300 */
+            padding-bottom: 0.5rem; /* pb-2 */
+        }
+        .doc-content h3 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            color: #334155; /* slate-700 */
+            margin-top: 2rem; /* mt-8 */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .doc-content p {
+            color: #475569; /* slate-600 */
+            line-height: 1.75; /* leading-7 */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .doc-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem; /* ml-6 */
+            margin-bottom: 1rem; /* mb-4 */
+            color: #475569; /* slate-600 */
+        }
+        .doc-content ol {
+            list-style-type: decimal;
+            margin-left: 1.5rem; /* ml-6 */
+            margin-bottom: 1rem; /* mb-4 */
+            color: #475569; /* slate-600 */
+        }
+        .doc-content li {
+            margin-bottom: 0.5rem; /* mb-2 */
+            padding-left: 0.5rem; /* pl-2 */
+        }
+        .doc-content code {
+            background-color: #e2e8f0; /* slate-200 */
+            color: #dc2626; /* red-600 */
+            font-weight: 600;
+            padding: 0.125rem 0.375rem; /* px-1.5 py-0.5 */
+            border-radius: 0.25rem; /* rounded */
+            font-family: monospace;
+        }
+        .doc-content strong {
+            color: #1e293b; /* slate-800 */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 sm:p-10">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-8 sm:p-12">
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b border-slate-200 pb-6 mb-10">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900">
+                OTP Implementation Project
+            </h1>
+            <a href="index.html" 
+               class="flex-shrink-0 ml-4 inline-block py-2 px-5 bg-white text-indigo-600 font-medium rounded-lg shadow-md border border-indigo-600 hover:bg-indigo-50 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:scale-105">
+                &larr; Back to Demo
+            </a>
+        </div>
+
+        <!-- Converted README Content -->
+        <article class="doc-content">
+            <p>This project demonstrates the complete logic and user flow of a secure One-Time Password (OTP) authentication system. It is broken into two main parts:</p>
+            <ol>
+                <li><strong><code>index.html</code> (The Logic Illustrator):</strong> A 3-box dashboard that visualizes the "behind-the-scenes" logic of OTP generation, storage, and verification.</li>
+                <li><strong><code>auth-page.html</code> (The User-Facing App):</strong> A realistic, single-page application that simulates the complete user experience of logging in with an email/phone number and a one-time code.</li>
+            </ol>
+
+            <h2>1. What is an OTP?</h2>
+            <p>A One-Time Password (OTP) is a password that is valid for only <strong>one</strong> login session or transaction, on a single device. It is a form of <strong>strong authentication</strong> because it is generated randomly and expires quickly, making it incredibly difficult for an attacker to guess or reuse.</p>
+            <p>OTPs are the foundation of <strong>Two-Factor Authentication (2FA)</strong>.</p>
+
+            <h2>2. The OTP Implementation & Verification Flow</h2>
+            <p>This project perfectly illustrates the three main stages of an OTP lifecycle.</p>
+
+            <h3>Step 1: Generation</h3>
+            <p>When a user wants to log in or perform a secure action (like a bank transfer), they first <em>request</em> an OTP.</p>
+            <ul>
+                <li><strong>How it works:</strong> The user enters their identifier (like an email or phone number) and clicks "Send OTP."</li>
+                <li><strong>On the Server:</strong> The server generates a cryptographically random, 6-digit numerical code.</li>
+                <li><strong>In this Project:</strong>
+                    <ul>
+                        <li><code>index.html</code>: Clicking the <strong>"Generate / Reset OTP"</strong> button in Box 1 simulates this.</li>
+                        <li><code>auth-page.html</code>: Submitting your email on the first screen triggers this.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Step 2: Storage & Delivery</h3>
+            <p>Once generated, the server must store the code and send it to the user.</p>
+            <ul>
+                <li><strong>How it works:</strong> The server saves the code (e.g., <code>123456</code>) in its database, links it to the user, and sets a short <strong>expiry time</strong> (e.g., 60 seconds). It then sends this code to the user via an Email or SMS.</li>
+                <li><strong>In this Project:</strong>
+                    <ul>
+                        <li><code>index.html</code>: <strong>Box 2 (Simulated Storage)</strong> acts as our "database." It shows you the code and starts the 60-second timer.</li>
+                        <li><code>auth-page.html</code>: The app <em>simulates</em> sending by logging the OTP to the browser console, then immediately shows the verification screen.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Step 3: Verification</h3>
+            <p>This is the final step where the user proves they have the code.</p>
+            <ul>
+                <li><strong>How it works:</strong> The user types the 6-digit code they received into the application. They click "Verify." The server then checks:
+                    <ol>
+                        <li>Is this code the <em>exact same</em> one I have stored for this user?</li>
+                        <li>Has the 60-second timer <em>expired</em>?</li>
+                        <li>(Security) Has the user <em>failed too many times</em> (e.g., 3 attempts)?</li>
+                    </ol>
+                </li>
+                <li><strong>In this Project:</strong>
+                    <ul>
+                        <li><code>index.html</code>: <strong>Box 3 (Verify OTP)</strong> performs this check against the value in Box 2.</li>
+                        <li><code>auth-page.html</code>: The 6-digit input box does the same check against the code stored in the console.</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>If all checks pass, the user is authenticated. If any check fails (wrong code, expired, too many attempts), the verification fails, and the user must start over.</p>
+
+            <h2>3. The Importance of OTP</h2>
+            <p>The "why" is the most critical part. Passwords alone are not secure.</p>
+            <ul>
+                <li><strong>Passwords Can Be Stolen:</strong> Hackers can steal passwords through phishing, database leaks, or guessing.</li>
+                <li><strong>OTP Solves This:</strong> OTP implements <strong>Two-Factor Authentication (2FA)</strong>. This means a user must provide <strong>two</strong> different types of credentials to log in:
+                    <ol>
+                        <li><strong>Factor 1: Something you KNOW</strong> (Your password)</li>
+                        <li><strong>Factor 2: Something you HAVE</strong> (Your phone, which receives the OTP)</li>
+                    </ol>
+                </li>
+            </ul>
+            <p>A hacker might steal your password, but it's useless without the second factor—the OTP that is generated in real-time and sent <em>only</em> to your physical device.</p>
+            <p>This small, 6-digit code is one of the most effective tools we have to protect against account takeovers, secure financial transactions, and prevent unauthorized access.</p>
+
+            <h2>4. Advanced Security Features in This Project</h2>
+            <p>This simulation also includes critical security features found in real-world systems:</p>
+            <ul>
+                <li><strong>OTP Expiry (60s Timer):</strong> Ensures that an old, used, or stolen code cannot be used again later.</li>
+                <li><strong>Verification Attempt Limits (3 Strikes):</strong> Prevents a "brute-force" attack, where a hacker rapidly tries to guess the code (e.g., <code>000000</code>, <code>000001</code>, <code>000002</code>...).</li>
+                <li><strong>Resend Rate Limiting (30s Delay):</strong> Stops a user (or attacker) from spamming the "Send OTP" button. This is crucial as every SMS or Email sent costs the company money and can be used as an abuse vector.</li>
+            </ul>
+        </article>
+    </div>
+
+</body>
+</html>
